@@ -1,0 +1,36 @@
+; Copyright (c) uib gmbh (www.uib.de)
+; This sourcecode is owned by uib gmbh
+; and published under the Terms of the General Public License.
+; credits: http://www.opsi.org/en/credits/
+
+include_append "%ScriptPath%\check_msi_exitcode.opsiscript"
+
+DefVar $found$
+DefVar $UninstallProgram$
+DefVar $displayName32$
+DefVar $displayName64$
+DefStringList $MsiList$
+
+Set $found$     = "false"
+Set $MsiId$     = '{5621BB3B-DFF3-48CA-93FE-4A018FB593B0}'
+Set $MsiList$ = addtolist($MsiList$, '{5BDE2B7A-1CF8-4DE5-8C07-9DE4828C82BC}')
+Set $MsiList$ = addtolist($MsiList$, '{5621BB3B-DFF3-48CA-93FE-4A018FB593B0}')
+
+for %aktmsi% in $msilist$ do sub_uninstallmsi
+
+[sub_uninstallmsi]
+Set $MsiId$ = "%aktmsi%"
+Set $displayName32$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName")
+Set $displayName64$ = GetRegistryStringValue64("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName")
+if not ($displayName32$ = "") or not ($displayName64$ = "")
+	ShowBitmap "%ScriptPath%\" + $ProductId$ + ".png" $PrettyName$
+  Message "Uninstalling " + $PrettyName$ + " ..."
+	comment "MSI id " + $MsiId$ + " found in registry, starting msiexec to uninstall"
+	Winbatch_uninstall_msi
+	;Winbatch_uninstall
+	sub_check_exitcode
+endif
+
+;-----------------------------------------------------
+[Winbatch_uninstall_msi]
+msiexec /x $MsiId$ /qb! REBOOT=ReallySuppress

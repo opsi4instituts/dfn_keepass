@@ -1,0 +1,183 @@
+; ----------------------------------------------------------------
+; Copyright (c) uib gmbh (www.uib.de)
+; This sourcecode is owned by uib
+; and published under the Terms of the General Public License.
+; credits: http://www.opsi.org/en/credits/
+; ----------------------------------------------------------------
+
+;****************************************
+; SETUPTYPE      msi
+;****************************************
+; PRODUCTID      keepass
+; SETUPFILE      KeePass-2.28.msi
+;****************************************
+; LICENSE        false     
+; PRODUCTDESC    KeePass is a free open source password manager, which helps you to manage your passwords in a secure way. You can put all your passwords in one database, which is locked with one master key or a key file. So you only have to remember one single master password or select the key file to unlock the whole database. 
+
+; PRODUCTNAME    KeePass 2.28
+; PRODUCTSIZE    50 MB
+; PRODUCTVER     2.28
+;****************************************
+; SETUPSCRIPT    setup.opsiscript
+; UNINSSCRIPT    uninstall.opsiscript
+;****************************************
+; MSIID          {5621BB3B-DFF3-48CA-93FE-4A018FB593B0}
+; USE-MST        
+; INSTALLDIR     (not used)
+;****************************************
+; TIMESTAMP      11.02.2015 12:04:42
+;****************************************
+
+[Actions]
+requiredWinstVersion >= "4.11.3.3"
+ScriptErrorMessages = false
+
+DefVar $SetupType$
+DefVar $ProductId$ 
+DefVar $Setupfile$ 
+DefVar $InstallDir$
+DefVar $MinimumSpace$
+DefVar $ExitCode$
+DefVar $ErrorMsg$
+DefVar $LicenseRequired$
+DefVar $LicenseKey$
+DefVar $LicensePool$
+DefVar $MsiId$
+DefVar $NsisInstallBatch$
+DefVar $LogDir$
+DefVar $PrettyName$ 
+DefVar $Version$
+
+Set $LogDir$ = "%SystemDrive%\tmp"
+
+include_append "%ScriptPath%\check_msi_exitcode.opsiscript"
+
+; ----------------------------------------------------------------
+Set $SetupType$       = "msi"
+; ----------------------------------------------------------------
+
+; $ProductId$ is the name of the product in opsi, only lower letters, no umlauts, no white spaces, use '-' as a seperator
+Set $ProductId$       = "keepass"
+Set $Setupfile$       = "KeePass-2.29.msi"
+Set $PrettyName$ 			= "KeePass"
+Set $Version$					= "2.29"
+; the path where we find the product after the installation
+Set $InstallDir$      = "(not used)"
+Set $LicenseRequired$ = "false"
+Set $LicensePool$     = "p_" + $ProductId$
+Set $MsiId$           = "{5621BB3B-DFF3-48CA-93FE-4A018FB593B0}"
+Set $MinimumSpace$    = "50 MB"
+
+; ----------------------------------------------------------------
+if FileExists("%ScriptDrive%\lib\getproductmap.opsiinc")
+  ;  read product values from configserver, such as ProductVersion
+  setLogLevel = 7
+  include_insert "%ScriptDrive%\lib\getproductmap.opsiinc"
+  setLogLevel = 6
+  Set $Version$	= $ProductMap_ProductVersion$
+  comment "use GetProductMap-Version: "+ $Setupfile$
+endif
+Set $Setupfile$ = $PrettyName$ + "-" + $Version$ + ".msi"
+
+if not(HasMinimumSpace ("%SystemDrive%", $MinimumSpace$))
+   LogError "Not enough space on %SystemDrive%, " + $MinimumSpace$ + " on drive %SystemDrive% needed for " + $ProductId$
+   isFatalError "No Space"
+   ; Stop process and set installation status to failed
+else
+	 Killtask "KeePass.exe"
+   comment "Show product picture"
+   ShowBitmap "%ScriptPath%\" + $ProductId$ + ".png" $PrettyName$ + " " + $Version$
+
+   if FileExists("%ScriptPath%\delsub.opsiscript")
+      comment "Start uninstall sub section"
+      Sub "%ScriptPath%\delsub.opsiscript"
+   endif
+   
+   Message "Installing " + $ProductId$  + " ..."
+   
+   if $LicenseRequired$ = "true"
+      comment "Licensing required, reserve license and get license key"
+      Sub_get_licensekey
+   endif
+
+   comment "Start setup program"
+   ChangeDirectory "%SCRIPTPATH%"
+   ;----------------------------------------------
+   Winbatch_install_msi
+   ;----------------------------------------------
+   Sub_check_exitcode	
+endif
+
+
+; ----------------------------------------------------------------
+; install sections
+; ----------------------------------------------------------------
+[Winbatch_install_msi]
+msiexec /i "%ScriptPath%\KeePass-2.29.msi"  /l* "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=1 REBOOT=ReallySuppress
+
+[Winbatch_install_advancedmsi]
+;"%ScriptPath%\KeePass-2.29.msi"  /exenoupdates /exenoui /exelog "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=1 REBOOT=ReallySuppress
+"%ScriptPath%\KeePass-2.29.msi" /qb! ALLUSERS=1 REBOOT=ReallySuppress
+
+[Winbatch_install_inno]
+; http://unattended.sourceforge.net/InnoSetup_Switches_ExitCodes.html
+; You may create setup answer file by: setup.exe /SAVEINF="filename"
+; You may use an answer file by the parameter /LOADINF="filename"
+"%ScriptPath%\KeePass-2.29.msi" /sp- /silent /norestart /nocancel /SUPPRESSMSGBOXES
+
+[Winbatch_install_installshield]
+; Create setup.iss answer file by running: setup.exe /r /f1"c:\setup.iss"
+; You may use an answer file by the parameter /f1"c:\setup.iss"
+;"%ScriptPath%\setup.exe" /s /w /f1 "c:\setup.iss"  /f2"$LogDir$\$ProductId$.install_log.txt"
+"%ScriptPath%\KeePass-2.29.msi" /s /w /f2"$LogDir$\$ProductId$.install_log.txt"
+
+[Winbatch_install_installshieldmsi]
+; "%ScriptPath%\KeePass-2.29.msi" /s /v" l* \"$LogDir$\$ProductId$.install_log.txt\" /qb! ALLUSERS=1 REBOOT=ReallySuppress"
+; Spaces in the path to the logfile cause problems, so better no logfile:
+"%ScriptPath%\KeePass-2.29.msi" /s /v" /qb! ALLUSERS=1 REBOOT=ReallySuppress"
+
+[Winbatch_install_nsis]
+;NSIS Nullsoft Scriptable Install System 
+$NsisInstallBatch$
+; ----------------------------------------------------------------
+
+
+[Sub_get_licensekey]
+if opsiLicenseManagementEnabled
+   comment "License management is enabled and will be used"
+
+   comment "Trying to get a license key"
+   Set $LicenseKey$ = demandLicenseKey ($LicensePool$)
+   ; If there is an assignment of exactly one licensepool to the product the following call is possible:
+   ; Set $LicenseKey$ = demandLicenseKey ("", $ProductId$)
+   ;
+   ; If there is an assignment of a license pool to a windows software id, it is possible to use:
+   ; DefVar $WindowsSoftwareId$
+   ; $WindowsSoftwareId$ = "..."
+   ; Set $LicenseKey$ = demandLicenseKey ("", "", $WindowsSoftwareId$)
+
+   DefVar $ServiceErrorClass$
+   set $ServiceErrorClass$ = getLastServiceErrorClass
+   comment "Error class: " + $ServiceErrorClass$
+   
+   if $ServiceErrorClass$ = "None"
+      comment "Everything fine, we got the license key '" + $LicenseKey$ + "'"
+   else
+      if $ServiceErrorClass$ = "LicenseConfigurationError"
+         LogError "Fatal: license configuration must be corrected"
+         LogError getLastServiceErrorMessage
+         isFatalError
+      else 
+         if $ServiceErrorClass$ = "LicenseMissingError"
+            LogError "Fatal: required license is not supplied"
+            isFatalError
+         endif
+      endif
+   endif
+else
+   LogError "Fatal: license required, but license management not enabled"
+   isFatalError
+endif
+
+; ----------------------------------------------------------------
+; ----------------------------------------------------------------
