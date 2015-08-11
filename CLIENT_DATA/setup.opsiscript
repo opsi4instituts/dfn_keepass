@@ -28,6 +28,18 @@
 ; TIMESTAMP      11.02.2015 12:04:42
 ;****************************************
 
+[Initial]
+setLogLevel=6
+;  Log Errors in Logfile but don't abort:
+ExitOnError=True
+; Show syntax errors in the script:
+ScriptErrorMessages=on
+; Dont trace step by step through the script:
+TraceMode=off
+; let started programs run in front of the winst window
+StayOnTop=True
+
+
 [Actions]
 requiredWinstVersion >= "4.11.3.3"
 ScriptErrorMessages = false
@@ -35,7 +47,6 @@ ScriptErrorMessages = false
 DefVar $SetupType$
 DefVar $ProductId$ 
 DefVar $Setupfile$ 
-DefVar $InstallDir$
 DefVar $MinimumSpace$
 DefVar $ExitCode$
 DefVar $ErrorMsg$
@@ -48,6 +59,7 @@ DefVar $LogDir$
 DefVar $PrettyName$ 
 DefVar $Version$
 
+
 Set $LogDir$ = "%SystemDrive%\tmp"
 
 include_append "%ScriptPath%\check_msi_exitcode.opsiscript"
@@ -58,14 +70,11 @@ Set $SetupType$       = "msi"
 
 ; $ProductId$ is the name of the product in opsi, only lower letters, no umlauts, no white spaces, use '-' as a seperator
 Set $ProductId$       = "keepass"
-Set $Setupfile$       = "KeePass-2.29.msi"
 Set $PrettyName$ 			= "KeePass"
-Set $Version$					= "2.29"
 ; the path where we find the product after the installation
-Set $InstallDir$      = "(not used)"
 Set $LicenseRequired$ = "false"
 Set $LicensePool$     = "p_" + $ProductId$
-Set $MsiId$           = "{5621BB3B-DFF3-48CA-93FE-4A018FB593B0}"
+Set $MsiId$           = "{18169642-7C53-4C93-A027-0AFB862D9DD5}"
 Set $MinimumSpace$    = "50 MB"
 
 ; ----------------------------------------------------------------
@@ -75,7 +84,7 @@ if FileExists("%ScriptDrive%\lib\getproductmap.opsiinc")
   include_insert "%ScriptDrive%\lib\getproductmap.opsiinc"
   setLogLevel = 6
   Set $Version$	= $ProductMap_ProductVersion$
-  comment "use GetProductMap-Version: "+ $Setupfile$
+  comment "use GetProductMap-Version: "+ $Version$	
 endif
 Set $Setupfile$ = $PrettyName$ + "-" + $Version$ + ".msi"
 
@@ -113,34 +122,9 @@ endif
 ; install sections
 ; ----------------------------------------------------------------
 [Winbatch_install_msi]
-msiexec /i "%ScriptPath%\KeePass-2.29.msi"  /l* "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=1 REBOOT=ReallySuppress
+msiexec /i "%ScriptPath%\$Setupfile$"  /l* "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=1 REBOOT=ReallySuppress
 
-[Winbatch_install_advancedmsi]
-;"%ScriptPath%\KeePass-2.29.msi"  /exenoupdates /exenoui /exelog "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=1 REBOOT=ReallySuppress
-"%ScriptPath%\KeePass-2.29.msi" /qb! ALLUSERS=1 REBOOT=ReallySuppress
-
-[Winbatch_install_inno]
-; http://unattended.sourceforge.net/InnoSetup_Switches_ExitCodes.html
-; You may create setup answer file by: setup.exe /SAVEINF="filename"
-; You may use an answer file by the parameter /LOADINF="filename"
-"%ScriptPath%\KeePass-2.29.msi" /sp- /silent /norestart /nocancel /SUPPRESSMSGBOXES
-
-[Winbatch_install_installshield]
-; Create setup.iss answer file by running: setup.exe /r /f1"c:\setup.iss"
-; You may use an answer file by the parameter /f1"c:\setup.iss"
-;"%ScriptPath%\setup.exe" /s /w /f1 "c:\setup.iss"  /f2"$LogDir$\$ProductId$.install_log.txt"
-"%ScriptPath%\KeePass-2.29.msi" /s /w /f2"$LogDir$\$ProductId$.install_log.txt"
-
-[Winbatch_install_installshieldmsi]
-; "%ScriptPath%\KeePass-2.29.msi" /s /v" l* \"$LogDir$\$ProductId$.install_log.txt\" /qb! ALLUSERS=1 REBOOT=ReallySuppress"
-; Spaces in the path to the logfile cause problems, so better no logfile:
-"%ScriptPath%\KeePass-2.29.msi" /s /v" /qb! ALLUSERS=1 REBOOT=ReallySuppress"
-
-[Winbatch_install_nsis]
-;NSIS Nullsoft Scriptable Install System 
-$NsisInstallBatch$
 ; ----------------------------------------------------------------
-
 
 [Sub_get_licensekey]
 if opsiLicenseManagementEnabled

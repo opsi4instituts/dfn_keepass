@@ -12,7 +12,6 @@ DefVar $LogDir$
 DefVar $ExitCode$
 DefVar $ErrorMsg$
 DefVar $ProductId$
-DefVar $InstallDir$
 DefVar $LicenseRequired$
 DefVar $LicensePool$
 DefVar $PrettyName$
@@ -28,8 +27,6 @@ Set $SetupType$ = "msi"
 ; ----------------------------------------------------------------
 Set $ProductId$       = "keepass"
 Set $PrettyName$ 			= "KeePass"
-
-Set $InstallDir$      = "(not used)"
 Set $LicenseRequired$ = "false"
 Set $LicensePool$     = "p_" + $ProductId$
 ; ----------------------------------------------------------------

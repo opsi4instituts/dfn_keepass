@@ -1,6 +1,6 @@
 [Package]
 version: 1
-depends:
+depends: 
 incremental: False
 
 [Product]
@@ -9,10 +9,10 @@ id: dfn_keepass
 name: KeePass
 description: KeePass is a free open source password manager, which helps you to manage your passwords in a secure way. You can put all your passwords in one database, which is locked with one master key or a key file. So you only have to remember one single master password or select the key file to unlock the whole database.
 advice: 
-version: 2.29
+version: 2.30
 priority: 0
 licenseRequired: False
-productClasses:
+productClasses: 
 setupScript: setup.opsiscript
 uninstallScript: uninstall.opsiscript
 updateScript: 
@@ -28,9 +28,9 @@ requiredStatus: installed
 requirementType: before
 
 [Changelog]
-
 keepass (2.28-1) stable; urgency=low
 
 	* initial: created by opsi-setup-detector
 
 -- opsisetupdetector.exe <info@uib.de>  11.02.2015 12:04:42
+
