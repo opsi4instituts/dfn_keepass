@@ -3,17 +3,16 @@
 ; and published under the Terms of the General Public License.
 ; credits: http://www.opsi.org/en/credits/
 
-include_append "%ScriptPath%\check_msi_exitcode.opsiscript"
-
 DefVar $UninstallProgram$
 DefVar $displayName32$
 DefVar $displayName64$
 DefStringList $MsiList$
 
-Set $MsiId$     = '{18169642-7C53-4C93-A027-0AFB862D9DD5}'
+Set $MsiId$   = "{58C533CB-C12F-4DF9-B58E-05A685F805CA}"
 Set $MsiList$ = addtolist($MsiList$, '{5BDE2B7A-1CF8-4DE5-8C07-9DE4828C82BC}')
 Set $MsiList$ = addtolist($MsiList$, '{5621BB3B-DFF3-48CA-93FE-4A018FB593B0}')
 Set $MsiList$ = addtolist($MsiList$, '{18169642-7C53-4C93-A027-0AFB862D9DD5}')
+Set $MsiList$ = addtolist($MsiList$, '{58C533CB-C12F-4DF9-B58E-05A685F805CA}')
 
 for %aktmsi% in $msilist$ do sub_uninstallmsi
 
@@ -26,7 +25,6 @@ if not ($displayName32$ = "") or not ($displayName64$ = "")
   Message "Uninstalling " + $PrettyName$ + " ..."
 	comment "MSI id " + $MsiId$ + " found in registry, starting msiexec to uninstall"
 	Winbatch_uninstall_msi
-	;Winbatch_uninstall
 	sub_check_exitcode
 endif
 

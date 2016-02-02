@@ -5,22 +5,17 @@
 
 [Actions]
 requiredWinstVersion >= "4.11.3.3"
+include_insert "insert_check_exit_code.opsiinc"
 
-DefVar $SetupType$
 DefVar $MsiId$
 DefVar $LogDir$
-DefVar $ExitCode$
 DefVar $ErrorMsg$
 DefVar $ProductId$
+DefVar $PrettyName$
 DefVar $LicenseRequired$
 DefVar $LicensePool$
-DefVar $PrettyName$
 
 Set $LogDir$ = "%SystemDrive%\tmp"
-
-; ----------------------------------------------------------------; ----------------------------------------------------------------
-Set $SetupType$ = "msi"
-; ----------------------------------------------------------------; ----------------------------------------------------------------
 
 ; ----------------------------------------------------------------; ----------------------------------------------------------------
 ; - Please check the following values                             -
@@ -31,11 +26,10 @@ Set $LicenseRequired$ = "false"
 Set $LicensePool$     = "p_" + $ProductId$
 ; ----------------------------------------------------------------
 
-
 comment "Show product picture"
-ShowBitmap "%ScriptPath%\" + $ProductId$ + ".png" $ProductId$
+ShowBitmap "%ScriptPath%\" + $ProductId$ + ".png" $PrettyName$ 
 
-Message "Uninstalling " + $PrettyName$ + " ..."
+Message "Uninstalling " + $ProductId$  + " ..."
 
 Killtask "KeePass.exe"
 if FileExists("%ScriptPath%\delsub.opsiscript")

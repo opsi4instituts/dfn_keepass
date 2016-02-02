@@ -41,52 +41,36 @@ StayOnTop=True
 
 
 [Actions]
-requiredWinstVersion >= "4.11.3.3"
+requiredWinstVersion >= "4.11.5.13"
 ScriptErrorMessages = false
 
-DefVar $SetupType$
 DefVar $ProductId$ 
 DefVar $Setupfile$ 
 DefVar $MinimumSpace$
-DefVar $ExitCode$
 DefVar $ErrorMsg$
-DefVar $LicenseRequired$
-DefVar $LicenseKey$
-DefVar $LicensePool$
 DefVar $MsiId$
 DefVar $NsisInstallBatch$
 DefVar $LogDir$
 DefVar $PrettyName$ 
 DefVar $Version$
 
-
 Set $LogDir$ = "%SystemDrive%\tmp"
 
-include_append "%ScriptPath%\check_msi_exitcode.opsiscript"
+include_insert "insert_check_exit_code.opsiinc"
+include_insert "insert_get_licensekey.opsiinc"
 
 ; ----------------------------------------------------------------
-Set $SetupType$       = "msi"
-; ----------------------------------------------------------------
-
 ; $ProductId$ is the name of the product in opsi, only lower letters, no umlauts, no white spaces, use '-' as a seperator
 Set $ProductId$       = "keepass"
 Set $PrettyName$ 			= "KeePass"
 ; the path where we find the product after the installation
 Set $LicenseRequired$ = "false"
 Set $LicensePool$     = "p_" + $ProductId$
-Set $MsiId$           = "{18169642-7C53-4C93-A027-0AFB862D9DD5}"
+Set $MsiId$           = "{58C533CB-C12F-4DF9-B58E-05A685F805CA}"
 Set $MinimumSpace$    = "50 MB"
-
+Set $Version$	        = strPart("%installingProdVersion%", "1", calculate(strPos("%installingProdVersion%","-") + "-" + "1" ))
+Set $Setupfile$       = $PrettyName$ + "-" + $Version$ + ".msi"
 ; ----------------------------------------------------------------
-if FileExists("%ScriptDrive%\lib\getproductmap.opsiinc")
-  ;  read product values from configserver, such as ProductVersion
-  setLogLevel = 7
-  include_insert "%ScriptDrive%\lib\getproductmap.opsiinc"
-  setLogLevel = 6
-  Set $Version$	= $ProductMap_ProductVersion$
-  comment "use GetProductMap-Version: "+ $Version$	
-endif
-Set $Setupfile$ = $PrettyName$ + "-" + $Version$ + ".msi"
 
 if not(HasMinimumSpace ("%SystemDrive%", $MinimumSpace$))
    LogError "Not enough space on %SystemDrive%, " + $MinimumSpace$ + " on drive %SystemDrive% needed for " + $ProductId$
@@ -124,44 +108,3 @@ endif
 [Winbatch_install_msi]
 msiexec /i "%ScriptPath%\$Setupfile$"  /l* "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=1 REBOOT=ReallySuppress
 
-; ----------------------------------------------------------------
-
-[Sub_get_licensekey]
-if opsiLicenseManagementEnabled
-   comment "License management is enabled and will be used"
-
-   comment "Trying to get a license key"
-   Set $LicenseKey$ = demandLicenseKey ($LicensePool$)
-   ; If there is an assignment of exactly one licensepool to the product the following call is possible:
-   ; Set $LicenseKey$ = demandLicenseKey ("", $ProductId$)
-   ;
-   ; If there is an assignment of a license pool to a windows software id, it is possible to use:
-   ; DefVar $WindowsSoftwareId$
-   ; $WindowsSoftwareId$ = "..."
-   ; Set $LicenseKey$ = demandLicenseKey ("", "", $WindowsSoftwareId$)
-
-   DefVar $ServiceErrorClass$
-   set $ServiceErrorClass$ = getLastServiceErrorClass
-   comment "Error class: " + $ServiceErrorClass$
-   
-   if $ServiceErrorClass$ = "None"
-      comment "Everything fine, we got the license key '" + $LicenseKey$ + "'"
-   else
-      if $ServiceErrorClass$ = "LicenseConfigurationError"
-         LogError "Fatal: license configuration must be corrected"
-         LogError getLastServiceErrorMessage
-         isFatalError
-      else 
-         if $ServiceErrorClass$ = "LicenseMissingError"
-            LogError "Fatal: required license is not supplied"
-            isFatalError
-         endif
-      endif
-   endif
-else
-   LogError "Fatal: license required, but license management not enabled"
-   isFatalError
-endif
-
-; ----------------------------------------------------------------
-; ----------------------------------------------------------------
