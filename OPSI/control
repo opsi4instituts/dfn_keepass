@@ -1,6 +1,6 @@
 [Package]
 version: 1
-depends: 
+depends:
 incremental: False
 
 [Product]
@@ -12,7 +12,7 @@ advice:
 version: 2.32
 priority: 0
 licenseRequired: False
-productClasses: 
+productClasses:
 setupScript: setup.opsiscript
 uninstallScript: uninstall.opsiscript
 updateScript: 
@@ -28,9 +28,9 @@ requiredStatus: installed
 requirementType: before
 
 [Changelog]
+
 keepass (2.28-1) stable; urgency=low
 
 	* initial: created by opsi-setup-detector
 
 -- opsisetupdetector.exe <info@uib.de>  11.02.2015 12:04:42
-
