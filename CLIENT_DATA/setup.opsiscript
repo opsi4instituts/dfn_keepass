@@ -66,7 +66,7 @@ Set $PrettyName$ 			= "KeePass"
 ; the path where we find the product after the installation
 Set $LicenseRequired$ = "false"
 Set $LicensePool$     = "p_" + $ProductId$
-Set $MsiId$           = "{58C533CB-C12F-4DF9-B58E-05A685F805CA}"
+Set $MsiId$           = "{BD1AB076-83DF-464E-8DC4-952FE562CB6B}"
 Set $MinimumSpace$    = "50 MB"
 Set $Version$	        = strPart("%installingProdVersion%", "1", calculate(strPos("%installingProdVersion%","-") + "-" + "1" ))
 Set $Setupfile$       = $PrettyName$ + "-" + $Version$ + ".msi"
