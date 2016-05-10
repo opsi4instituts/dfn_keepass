@@ -1,6 +1,6 @@
 [Package]
 version: 1
-depends:
+depends: 
 incremental: False
 
 [Product]
@@ -9,10 +9,10 @@ id: dfn_keepass
 name: KeePass
 description: KeePass is a free open source password manager, which helps you to manage your passwords in a secure way. You can put all your passwords in one database, which is locked with one master key or a key file. So you only have to remember one single master password or select the key file to unlock the whole database.
 advice: 
-version: 2.32
+version: 2.33
 priority: 0
 licenseRequired: False
-productClasses:
+productClasses: 
 setupScript: setup.opsiscript
 uninstallScript: uninstall.opsiscript
 updateScript: 
@@ -27,8 +27,31 @@ requiredProduct: dfn_dotnet
 requiredStatus: installed
 requirementType: before
 
-[Changelog]
+[ProductProperty]
+type: bool
+name: desktopicon
+description: generate or delete desktop icon
+default: True
 
+[ProductProperty]
+type: unicode
+name: custom-post-install
+multivalue: False
+editable: True
+description: Define filename for include script in custom directory after installation
+values: ["none", "post-install.opsiinc"]
+default: ["none"]
+
+[ProductProperty]
+type: unicode
+name: custom-post-deinstall
+multivalue: False
+editable: True
+description: Define filename for include script in custom directory after deinstallation
+values: ["none", "post-deinstall.opsiinc"]
+default: ["none"]
+
+[Changelog]
 keepass (2.28-1) stable; urgency=low
 
 	* initial: created by opsi-setup-detector

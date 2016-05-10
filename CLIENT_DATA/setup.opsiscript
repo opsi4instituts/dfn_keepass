@@ -47,29 +47,31 @@ ScriptErrorMessages = false
 DefVar $ProductId$ 
 DefVar $Setupfile$ 
 DefVar $MinimumSpace$
-DefVar $ErrorMsg$
-DefVar $MsiId$
-DefVar $NsisInstallBatch$
 DefVar $LogDir$
 DefVar $PrettyName$ 
 DefVar $Version$
-
-Set $LogDir$ = "%SystemDrive%\tmp"
+DefVar $InstallDir$
+DefVar $PathToExe$
+DefVar $DesktopIconName$
+DefVar $Property_DesktopIcon$
+DefVar $CustomPostInstall$
 
 include_insert "insert_check_exit_code.opsiinc"
-include_insert "insert_get_licensekey.opsiinc"
+include_append "section_linkfolder.opsiinc"
 
 ; ----------------------------------------------------------------
 ; $ProductId$ is the name of the product in opsi, only lower letters, no umlauts, no white spaces, use '-' as a seperator
-Set $ProductId$       = "keepass"
-Set $PrettyName$ 			= "KeePass"
-; the path where we find the product after the installation
-Set $LicenseRequired$ = "false"
-Set $LicensePool$     = "p_" + $ProductId$
-Set $MsiId$           = "{BD1AB076-83DF-464E-8DC4-952FE562CB6B}"
-Set $MinimumSpace$    = "50 MB"
-Set $Version$	        = strPart("%installingProdVersion%", "1", calculate(strPos("%installingProdVersion%","-") + "-" + "1" ))
-Set $Setupfile$       = $PrettyName$ + "-" + $Version$ + ".msi"
+Set $LogDir$            = "%SystemDrive%\tmp"
+Set $ProductId$         = "dfn_keepass"
+Set $PrettyName$ 			  = "KeePass"
+Set $MinimumSpace$      = "50 MB"
+Set $Version$	          = strPart("%installingProdVersion%", "1", calculate(strPos("%installingProdVersion%","-") + "-" + "1" ))
+Set $Setupfile$         = $PrettyName$ + "-" + $Version$ + ".msi"
+
+Set $Property_DesktopIcon$ = GetProductProperty("desktopicon","True")
+Set $DesktopIconName$      = $PrettyName$
+Set $InstallDir$           = "%ProgramFiles32Dir%\KeePass2x"
+Set $PathToExe$            = $InstallDir$ + "\KeePass.exe"
 ; ----------------------------------------------------------------
 
 if not(HasMinimumSpace ("%SystemDrive%", $MinimumSpace$))
@@ -82,23 +84,32 @@ else
    ShowBitmap "%ScriptPath%\" + $ProductId$ + ".png" $PrettyName$ + " " + $Version$
 
    if FileExists("%ScriptPath%\delsub.opsiscript")
+      Message "Uninstalling old version..."
       comment "Start uninstall sub section"
       Sub "%ScriptPath%\delsub.opsiscript"
    endif
    
    Message "Installing " + $ProductId$  + " ..."
-   
-   if $LicenseRequired$ = "true"
-      comment "Licensing required, reserve license and get license key"
-      Sub_get_licensekey
-   endif
-
    comment "Start setup program"
    ChangeDirectory "%SCRIPTPATH%"
    ;----------------------------------------------
    Winbatch_install_msi
-   ;----------------------------------------------
    Sub_check_exitcode	
+
+  if ($Property_DesktopIcon$ = "True")
+    LinkFolder_create
+  else
+    LinkFolder_delete
+  endif
+
+  comment "include custom post install file"
+  set $CustomPostInstall$ = getProductProperty("custom-post-install","none")
+  if not ($CustomPostInstall$ = "none")
+	  if FileExists("%ScriptPath%\custom\" + $CustomPostInstall$)
+	  	include_insert "%ScriptPath%\custom\" + $CustomPostInstall$
+	  endif
+  endif
+
 endif
 
 

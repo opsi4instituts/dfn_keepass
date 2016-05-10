@@ -3,18 +3,19 @@
 ; and published under the Terms of the General Public License.
 ; credits: http://www.opsi.org/en/credits/
 
-DefVar $UninstallProgram$
 DefVar $displayName32$
 DefVar $displayName64$
+DefVar $MsiId$
 DefStringList $MsiList$
 
-
-Set $MsiId$   = "{BD1AB076-83DF-464E-8DC4-952FE562CB6B}"
+Set $MsiId$   = "{E0493447-D92D-46B5-B3F9-18A642588915}"
 Set $MsiList$ = addtolist($MsiList$, '{58C533CB-C12F-4DF9-B58E-05A685F805CA}')
 Set $MsiList$ = addtolist($MsiList$, '{5BDE2B7A-1CF8-4DE5-8C07-9DE4828C82BC}')
 Set $MsiList$ = addtolist($MsiList$, '{5621BB3B-DFF3-48CA-93FE-4A018FB593B0}')
 Set $MsiList$ = addtolist($MsiList$, '{18169642-7C53-4C93-A027-0AFB862D9DD5}')
 Set $MsiList$ = addtolist($MsiList$, '{58C533CB-C12F-4DF9-B58E-05A685F805CA}')
+Set $MsiList$ = addtolist($MsiList$, '{BD1AB076-83DF-464E-8DC4-952FE562CB6B}')
+Set $MsiList$ = addtolist($MsiList$, '{E0493447-D92D-46B5-B3F9-18A642588915}')
 
 for %aktmsi% in $msilist$ do sub_uninstallmsi
 

@@ -6,24 +6,27 @@
 [Actions]
 requiredWinstVersion >= "4.11.3.3"
 include_insert "insert_check_exit_code.opsiinc"
+include_append "section_linkfolder.opsiinc"
 
-DefVar $MsiId$
 DefVar $LogDir$
-DefVar $ErrorMsg$
 DefVar $ProductId$
 DefVar $PrettyName$
-DefVar $LicenseRequired$
-DefVar $LicensePool$
-
-Set $LogDir$ = "%SystemDrive%\tmp"
-
+DefVar $InstallDir$
+DefVar $PathToExe$
+DefVar $DesktopIconName$
+DefVar $Property_DesktopIcon$
+DefVar $CustomPostDeinstall$
 ; ----------------------------------------------------------------; ----------------------------------------------------------------
 ; - Please check the following values                             -
 ; ----------------------------------------------------------------
-Set $ProductId$       = "keepass"
-Set $PrettyName$ 			= "KeePass"
-Set $LicenseRequired$ = "false"
-Set $LicensePool$     = "p_" + $ProductId$
+Set $ProductId$            = "dfn_keepass"
+Set $PrettyName$ 			     = "KeePass"
+Set $LogDir$               = "%SystemDrive%\tmp"
+Set $Property_DesktopIcon$ = GetProductProperty("desktopicon","True")
+Set $DesktopIconName$      = $PrettyName$
+Set $InstallDir$           = "%ProgramFiles32Dir%\KeePass2x"
+Set $PathToExe$            = $InstallDir$ + "\KeePass.exe"
+Set $CustomPostDeinstall$ = getProductProperty("custom-post-deinstall","none")
 ; ----------------------------------------------------------------
 
 comment "Show product picture"
@@ -36,23 +39,12 @@ if FileExists("%ScriptPath%\delsub.opsiscript")
    comment "Start uninstall sub section"
    Sub "%ScriptPath%\delsub.opsiscript"
 endif
+ 
+LinkFolder_delete
 
-if $LicenseRequired$ = "true"
-   comment "Licensing required, free license used"
-   Sub_free_license
+comment "include custom post deinstall file"
+if not ($CustomPostDeinstall$ = "none")
+	if FileExists("%ScriptPath%\custom\" + $CustomPostDeinstall$)
+		include_insert "%ScriptPath%\custom\" + $CustomPostDeinstall$
+	endif
 endif
-
-[Sub_free_license]
-comment "License management is enabled and will be used"
-
-comment "Trying to free license used for the product"
-DefVar $result$
-Set $result$ = FreeLicense($LicensePool$)
-; If there is an assignment of a license pool to the product, it is possible to use
-; Set $result$ = FreeLicense("", $ProductId$)
-;
-; If there is an assignment of a license pool to a windows software id, it is possible to use
-; DefVar $WindowsSoftwareId$
-; $WindowsSoftwareId$ = "..."
-; set $result$ = FreeLicense("", "", $WindowsSoftwareId$)
-
