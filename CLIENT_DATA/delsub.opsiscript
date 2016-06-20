@@ -8,7 +8,8 @@ DefVar $displayName64$
 DefVar $MsiId$
 DefStringList $MsiList$
 
-Set $MsiId$   = "{E0493447-D92D-46B5-B3F9-18A642588915}"
+Set $MsiId$   = "{36F0005F-4042-4768-8736-8F95CC3B742C}"
+Set $MsiList$ = addtolist($MsiList$, '{E0493447-D92D-46B5-B3F9-18A642588915}')
 Set $MsiList$ = addtolist($MsiList$, '{58C533CB-C12F-4DF9-B58E-05A685F805CA}')
 Set $MsiList$ = addtolist($MsiList$, '{5BDE2B7A-1CF8-4DE5-8C07-9DE4828C82BC}')
 Set $MsiList$ = addtolist($MsiList$, '{5621BB3B-DFF3-48CA-93FE-4A018FB593B0}')
