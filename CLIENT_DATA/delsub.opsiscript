@@ -8,15 +8,41 @@ DefVar $displayName64$
 DefVar $MsiId$
 DefStringList $MsiList$
 
-Set $MsiId$   = "{36F0005F-4042-4768-8736-8F95CC3B742C}"
-Set $MsiList$ = addtolist($MsiList$, '{E0493447-D92D-46B5-B3F9-18A642588915}')
-Set $MsiList$ = addtolist($MsiList$, '{58C533CB-C12F-4DF9-B58E-05A685F805CA}')
+Set $MsiId$   = "{499FAE95-DECD-4168-8906-A6F502C3CE87}"
+
+;KeePass 2.25.0
+Set $MsiList$ = addtolist($MsiList$, '{1B023D7A-2044-432E-89BE-245343E5A392}')
+
+;KeePass 2.26.0
+Set $MsiList$ = addtolist($MsiList$, '{F7887C9C-D676-4630-871F-85B851B8E276}')
+
+;KeePass 2.27.0
+Set $MsiList$ = addtolist($MsiList$, '{10606646-D620-4450-A680-0C10CD1D4F00}')
+
+; KeePass 2.28.0
 Set $MsiList$ = addtolist($MsiList$, '{5BDE2B7A-1CF8-4DE5-8C07-9DE4828C82BC}')
+
+; KeePass 2.29.0
 Set $MsiList$ = addtolist($MsiList$, '{5621BB3B-DFF3-48CA-93FE-4A018FB593B0}')
+
+; KeePass 2.30.0
 Set $MsiList$ = addtolist($MsiList$, '{18169642-7C53-4C93-A027-0AFB862D9DD5}')
+
+; KeePass 2.31.0
 Set $MsiList$ = addtolist($MsiList$, '{58C533CB-C12F-4DF9-B58E-05A685F805CA}')
+
+; KeePass 2.32.0
 Set $MsiList$ = addtolist($MsiList$, '{BD1AB076-83DF-464E-8DC4-952FE562CB6B}')
+
+; Keepass 2.33.0:
 Set $MsiList$ = addtolist($MsiList$, '{E0493447-D92D-46B5-B3F9-18A642588915}')
+
+; Keepass 2.34.0:
+Set $MsiList$ = addtolist($MsiList$, '{36F0005F-4042-4768-8736-8F95CC3B742C}')
+
+; Keepass 2.35.0:
+Set $MsiList$ = addtolist($MsiList$, '{499FAE95-DECD-4168-8906-A6F502C3CE87}')
+
 
 for %aktmsi% in $msilist$ do sub_uninstallmsi
 

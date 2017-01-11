@@ -21,7 +21,7 @@
 ; SETUPSCRIPT    setup.opsiscript
 ; UNINSSCRIPT    uninstall.opsiscript
 ;****************************************
-; MSIID          {5621BB3B-DFF3-48CA-93FE-4A018FB593B0}
+; MSIID          {499FAE95-DECD-4168-8906-A6F502C3CE87}
 ; USE-MST        
 ; INSTALLDIR     (not used)
 ;****************************************
