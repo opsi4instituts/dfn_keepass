@@ -1,0 +1,68 @@
+requiredWinstVersion >= "4.11.5.13"
+
+DefVar $RegPathUninstall$
+DefVar $LogDir$
+DefVar $ProductId$
+DefVar $ProductName$
+DefVar $ProductVersion$
+DefVar $InstalledVersion$
+DefVar $MinimumSpace$
+DefVar $InstallDir$
+DefVar $InstFile$
+DefVar $ExitCode$
+DefVar $ErrorMsg$
+DefVar $CustomPostInstall$
+DefVar $CustomPostDeinstall$
+DefVar $DesktopLink$
+DefVar $DefaultLanguage$
+DefVar $LanguageFile$
+DefVar $SystemLanguage$
+DefStringList $LanguageMap$
+DefVar $PathToExe$
+DefVar $INST_SystemType$
+DefVar $MSVersion$
+DefVar $SearchPattern$
+DefVar $RegId$
+DefVar $SilentOption$
+DefVar $UpdateCheck$
+DefVar $UninstallProgram$
+DefVar $UninstallDir$
+DefStringlist $ResultList$
+DefStringList $FileInfoList$
+
+Set $LogDir$ = "%opsiLogDir%"
+
+Set $INST_SystemType$ = GetSystemType
+Set $MSVersion$	 = GetMsVersionInfo
+
+Set $ProductVersion$ = takestring (0, splitString("%installingProdVersion%", "-"))
+
+Set $DesktopLink$ = getProductProperty("desktop-link","false")
+Set $SilentOption$ = GetProductProperty("silent-option","/qb!")
+
+; ----------------------------------------------------------------
+Set $ProductId$ 	= "keepass"
+Set $ProductName$ 	= "KeePass"
+Set $MinimumSpace$ 	= "50 MB"
+Set $InstFile$		= "KeePass-" + $ProductVersion$ + ".msi"
+Set $RegPathUninstall$  = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
+Set $InstallDir$    = "%ProgramFiles32Dir%\KeePass2x"
+Set $PathToExe$     = $InstallDir$ + "\KeePass.exe"
+; ----------------------------------------------------------------
+
+setloglevel = 6
+include_append "check_msi_exitcode.opsiinc"
+include_append "section_sub_search_registry3264_uninstall_keys.opsiinc"
+
+if not ($MSVersion$ = "6.1" OR $MSVersion$ = "10.0")
+	Logwarning "Only tested with windows 7 and 10! Please report to the maintainer successful installation on other windows versions."		
+endif
+
+comment "Show product picture"
+if (FileExists("%ScriptPath%\..\lib\icons\%installingProdName%.png"))
+       comment "logo at local library/icons found."
+       ShowBitmap "%ScriptPath%\..\lib\icons\%installingProdName%.png" $ProductName$
+else
+       comment "no logo at local library/icons, use from ScriptPath ..."
+       ShowBitmap "%ScriptPath%\o4i.png" $ProductName$
+endif

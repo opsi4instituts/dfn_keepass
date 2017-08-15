@@ -1,51 +1,10 @@
-; Copyright (c) uib gmbh (www.uib.de)
-; This sourcecode is owned by uib gmbh
-; and published under the Terms of the General Public License.
-; credits: http://www.opsi.org/en/credits/
-
 [Actions]
-requiredWinstVersion >= "4.11.3.3"
-include_insert "insert_check_exit_code.opsiinc"
-include_append "section_linkfolder.opsiinc"
+; common Values for (de)installation
+include_insert "common.opsiinc"
 
-DefVar $LogDir$
-DefVar $ProductId$
-DefVar $PrettyName$
-DefVar $InstallDir$
-DefVar $PathToExe$
-DefVar $DesktopIconName$
-DefVar $Property_DesktopIcon$
-DefVar $CustomPostDeinstall$
-; ----------------------------------------------------------------
-; ----------------------------------------------------------------
-; - Please check the following values                             -
-; ----------------------------------------------------------------
-Set $ProductId$            = "dfn_keepass"
-Set $PrettyName$ 			     = "KeePass"
-Set $LogDir$               = "%SystemDrive%\tmp"
-Set $Property_DesktopIcon$ = GetProductProperty("desktopicon","True")
-Set $DesktopIconName$      = $PrettyName$
-Set $InstallDir$           = "%ProgramFiles32Dir%\KeePass2x"
-Set $PathToExe$            = $InstallDir$ + "\KeePass.exe"
-Set $CustomPostDeinstall$ = getProductProperty("custom-post-deinstall","none")
-; ----------------------------------------------------------------
+Message "Uninstalling " + $ProductName$  + " ..."
 
-comment "Show product picture"
-ShowBitmap "%ScriptPath%\" + $ProductId$ + ".png" $PrettyName$ 
-
-Message "Uninstalling " + $ProductId$  + " ..."
-
-Killtask "KeePass.exe"
 if FileExists("%ScriptPath%\delsub.opsiscript")
-   comment "Start uninstall sub section"
-   Sub "%ScriptPath%\delsub.opsiscript"
-endif
- 
-LinkFolder_delete
-
-comment "include custom post deinstall file"
-if not ($CustomPostDeinstall$ = "none")
-	if FileExists("%ScriptPath%\custom\" + $CustomPostDeinstall$)
-		include_insert "%ScriptPath%\custom\" + $CustomPostDeinstall$
-	endif
+	comment "Start uninstall sub section"
+	Sub "%ScriptPath%\delsub.opsiscript"
 endif

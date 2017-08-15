@@ -1,3 +1,6 @@
+custom
+orig
 *.msi
 *.bak
 *.opsi
+*.md5

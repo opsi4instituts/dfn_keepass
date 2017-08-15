@@ -1,121 +1,102 @@
-; ----------------------------------------------------------------
-; Copyright (c) uib gmbh (www.uib.de)
-; This sourcecode is owned by uib
-; and published under the Terms of the General Public License.
-; credits: http://www.opsi.org/en/credits/
-; ----------------------------------------------------------------
-
-;****************************************
-; SETUPTYPE      msi
-;****************************************
-; PRODUCTID      keepass
-; SETUPFILE      KeePass-2.28.msi
-;****************************************
-; LICENSE        false     
-; PRODUCTDESC    KeePass is a free open source password manager, which helps you to manage your passwords in a secure way. You can put all your passwords in one database, which is locked with one master key or a key file. So you only have to remember one single master password or select the key file to unlock the whole database. 
-
-; PRODUCTNAME    KeePass 2.28
-; PRODUCTSIZE    50 MB
-; PRODUCTVER     2.28
-;****************************************
-; SETUPSCRIPT    setup.opsiscript
-; UNINSSCRIPT    uninstall.opsiscript
-;****************************************
-; MSIID          {499FAE95-DECD-4168-8906-A6F502C3CE87}
-; USE-MST        
-; INSTALLDIR     (not used)
-;****************************************
-; TIMESTAMP      11.02.2015 12:04:42
-;****************************************
-
-[Initial]
-setLogLevel=6
-;  Log Errors in Logfile but don't abort:
-ExitOnError=True
-; Show syntax errors in the script:
-ScriptErrorMessages=on
-; Dont trace step by step through the script:
-TraceMode=off
-; let started programs run in front of the winst window
-StayOnTop=True
-
-
 [Actions]
-requiredWinstVersion >= "4.11.5.13"
-ScriptErrorMessages = false
-
-DefVar $ProductId$ 
-DefVar $Setupfile$ 
-DefVar $MinimumSpace$
-DefVar $LogDir$
-DefVar $PrettyName$ 
-DefVar $Version$
-DefVar $InstallDir$
-DefVar $PathToExe$
-DefVar $DesktopIconName$
-DefVar $Property_DesktopIcon$
-DefVar $CustomPostInstall$
-
-include_insert "insert_check_exit_code.opsiinc"
-include_append "section_linkfolder.opsiinc"
-
-; ----------------------------------------------------------------
-; $ProductId$ is the name of the product in opsi, only lower letters, no umlauts, no white spaces, use '-' as a seperator
-Set $LogDir$            = "%SystemDrive%\tmp"
-Set $ProductId$         = "dfn_keepass"
-Set $PrettyName$ 			  = "KeePass"
-Set $MinimumSpace$      = "50 MB"
-Set $Version$	          = strPart("%installingProdVersion%", "1", calculate(strPos("%installingProdVersion%","-") + "-" + "1" ))
-Set $Setupfile$         = $PrettyName$ + "-" + $Version$ + ".msi"
-
-Set $Property_DesktopIcon$ = GetProductProperty("desktopicon","True")
-Set $DesktopIconName$      = $PrettyName$
-Set $InstallDir$           = "%ProgramFiles32Dir%\KeePass2x"
-Set $PathToExe$            = $InstallDir$ + "\KeePass.exe"
-; ----------------------------------------------------------------
+; common Values for (de)installation
+include_insert "common.opsiinc"
 
 if not(HasMinimumSpace ("%SystemDrive%", $MinimumSpace$))
    LogError "Not enough space on %SystemDrive%, " + $MinimumSpace$ + " on drive %SystemDrive% needed for " + $ProductId$
    isFatalError "No Space"
    ; Stop process and set installation status to failed
 else
-	 Killtask "KeePass.exe"
-   comment "Show product picture"
-   ShowBitmap "%ScriptPath%\" + $ProductId$ + ".png" $PrettyName$ + " " + $Version$
-
-   if FileExists("%ScriptPath%\delsub.opsiscript")
-      Message "Uninstalling old version..."
-      comment "Start uninstall sub section"
-      Sub "%ScriptPath%\delsub.opsiscript"
-   endif
+   	if FileExists("%ScriptPath%\delsub.opsiscript")
+   		comment "Start uninstall sub section"
+    	Sub "%ScriptPath%\delsub.opsiscript"
+    endif
    
-   Message "Installing " + $ProductId$  + " ..."
-   comment "Start setup program"
-   ChangeDirectory "%SCRIPTPATH%"
-   ;----------------------------------------------
-   Winbatch_install_msi
-   Sub_check_exitcode	
+	Message "Installing %installingProdName% (%installingProdVersion%)..."   
+	comment "Start setup program"
 
-  if ($Property_DesktopIcon$ = "True")
-    LinkFolder_create
-  else
-    LinkFolder_delete
-  endif
+   	Winbatch_install_msi
+   	Sub_check_exitcode	
 
-  comment "include custom post install file"
-  set $CustomPostInstall$ = getProductProperty("custom-post-install","none")
-  if not ($CustomPostInstall$ = "none")
-	  if FileExists("%ScriptPath%\custom\" + $CustomPostInstall$)
-	  	include_insert "%ScriptPath%\custom\" + $CustomPostInstall$
-	  endif
-  endif
+	comment "Testing for installation success"
+	if FileExists($PathToExe$)
+		; Verifies if product version number matches installed version number
+		set $FileInfoList$ = getFileInfoMap($PathToExe$)
+		set $InstalledVersion$ = getValue("file version with dots", $FileInfoList$)
+		; executable file version consistently has an extra zero digit at the end, therefore substring comparison
+		if not (contains($InstalledVersion$, $ProductVersion$))
+			logError "Fatal: Installed product version is " + $InstalledVersion$ + " but is supposed to be " + $ProductVersion$
+			isFatalError
+		endif
 
+		; MSI legt defaultmäßig einen Link an, ggf. löschen
+		if $DesktopLink$ = "false"
+    		LinkFolder_delete_desktoplink
+    	endif
+
+		comment "include custom post install file"
+		set $CustomPostInstall$ = getProductProperty("custom-post-install","none")
+		if not ($CustomPostInstall$ = "none")
+			if FileExists("%ScriptPath%\custom\" + $CustomPostInstall$)
+	  			include_insert "%ScriptPath%\custom\" + $CustomPostInstall$
+	  		endif
+	  	endif
+	  	
+	  	; Konfiguration und Language-File kopieren
+	  	Files_install_config
+
+		; Soll die Sprache geändert werden?
+	  	Set $DefaultLanguage$ = GetProductProperty("default-language", "auto")	  	
+	  	if $DefaultLanguage$ = "auto"
+			Set $LanguageMap$ = GetLocaleInfoMap
+			Set $SystemLanguage$ = lower(getValue("system_default_language_id", $LanguageMap$))
+			if $SystemLanguage$ = "0407"
+				Set $LanguageFile$ = "German.lngx"				
+			endif
+		endif
+		if $DefaultLanguage$ = "de" 
+			Set $LanguageFile$ = "German.lngx"
+		endif
+		if not ($LanguageFile$ = "")
+			XMLPatch_set-languagefile $InstallDir$ + "\KeePass.config.xml"
+		endif
+		
+		; update-check gewünscht?
+		Set $UpdateCheck$ = GetProductProperty("update-check", "false")
+		if $UpdateCheck$ = "true"
+			XMLPatch_set-update-check $InstallDir$ + "\KeePass.config.xml"
+		endif
+	else
+		logError "Could not found " + $PathToExe$ + "after installation"
+		isFatalError
+	endif
 endif
 
-
-; ----------------------------------------------------------------
-; install sections
-; ----------------------------------------------------------------
 [Winbatch_install_msi]
-msiexec /i "%ScriptPath%\$Setupfile$"  /l* "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=1 REBOOT=ReallySuppress
+msiexec $SilentOption$ /i "%ScriptPath%\$InstFile$" /l* "$LogDir$\$ProductId$.install_log.txt" ALLUSERS=1 REBOOT=ReallySuppress
 
+[Files_install_config]
+copy "%ScriptPath%\files\*.*" "$InstallDir$"
+
+[XMLPatch_set-languagefile]
+openNodeSet 'Application /LanguageFile'
+SetText "$LanguageFile$"
+
+[XMLPatch_set-update-check]
+openNodeSet 'Application /Start /CheckForUpdate'
+; habs auch mit $UpdateCheck$ versucht, aber dort ist "True"! XML mag aber "true" ;-)
+SetText "true"
+
+[LinkFolder_create_desktoplink]
+; create an shortcut to the installed exe on AllUsers desktop:
+set_basefolder common_desktopdirectory
+set_subfolder ""
+set_link
+       name: $ProductName$
+       target: $PathToExe$
+end_link
+
+[Linkfolder_delete_desktoplink]
+set_basefolder common_desktopdirectory
+set_subfolder ""
+delete_element $ProductName$
