@@ -1,5 +1,5 @@
 [Package]
-version: 1
+version: 2
 depends: 
 incremental: False
 
@@ -7,7 +7,7 @@ incremental: False
 type: localboot
 id: dfn_keepass
 name: KeePass
-description: KeePass is a free open source password manager, which helps you to manage your passwords in a secure way. You can put all your passwords in one database, which is locked with one master key or a key file. So you only have to remember one single master password or select the key file to unlock the whole database.
+description: Einfaches und leicht zu bedienendes Programm zur sicheren Kennwortverwaltung.
 advice: 
 version: 2.36
 priority: 0
@@ -21,17 +21,20 @@ onceScript:
 customScript: 
 userLoginScript: 
 
-[ProductDependency]
-action: setup
-requiredProduct: dfn_dotnet
-requiredStatus: installed
-requirementType: before
-
 [ProductProperty]
 type: bool
-name: desktopicon
-description: generate or delete desktop icon
-default: True
+name: desktop-link
+description: Link on Desktop?
+default: False
+
+[ProductProperty]
+type: unicode
+name: silent-option
+multivalue: False
+editable: False
+description: Un/Install silent (/qb!) or very silent (/qn); Show progressbar of installer or not
+values: ["/qb!", "/qn"]
+default: ["/qb!"]
 
 [ProductProperty]
 type: unicode
@@ -51,7 +54,28 @@ description: Define filename for include script in custom directory after deinst
 values: ["none", "post-deinstall.opsiinc"]
 default: ["none"]
 
+[ProductProperty]
+type: unicode
+name: default-language
+multivalue: False
+editable: False
+description: Sets the default language of the program UI. Can be changed by the user later.
+values: ["auto", "de", "en"]
+default: ["auto"]
+
+[ProductProperty]
+type: bool
+name: update-check
+description: Check for update on startup?
+default: False
+
 [Changelog]
+dfn_keepass (2.36-2)
+	* kompletter Rewrite (common.opsiinc & Registry-Suche nach vorherigen Versionen, Language, Update-Check)
+	* o4i-Richtlinien (Desktop-Link, Silent-Option), eigenes Logo, ...
+	* Dependency zu dfn_dotnet entfernt, benötigt .NET >= 2.0 (ist ab Win7 standardmäßig enthalten)
+ -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 15.08.2017
+
 keepass (2.28-1) stable; urgency=low
 
 	* initial: created by opsi-setup-detector
