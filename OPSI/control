@@ -1,5 +1,5 @@
 [Package]
-version: 2
+version: 3
 depends: 
 incremental: False
 
@@ -7,7 +7,7 @@ incremental: False
 type: localboot
 id: dfn_keepass
 name: KeePass
-description: Einfaches und leicht zu bedienendes Programm zur sicheren Kennwortverwaltung.
+description: Einfaches und leicht zu bedienendes Programm zur sicheren Kennwortverwaltung. Alle Passwörter sind in einer verschlüsselten Datenbank gespeichert. [Open source, light-weight and easy-to-use password manager. All passwords are stored in a encrypted database.]
 advice: 
 version: 2.36
 priority: 0
@@ -70,6 +70,10 @@ description: Check for update on startup?
 default: False
 
 [Changelog]
+dfn_keepass (2.36-3)
+	* Beschreibung zusätzlich auf Englisch
+ -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 16.08.2017
+
 dfn_keepass (2.36-2)
 	* kompletter Rewrite (common.opsiinc & Registry-Suche nach vorherigen Versionen, Language, Update-Check)
 	* o4i-Richtlinien (Desktop-Link, Silent-Option), eigenes Logo, ...
