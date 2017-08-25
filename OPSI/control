@@ -1,5 +1,5 @@
 [Package]
-version: 3
+version: 4
 depends: 
 incremental: False
 
@@ -70,6 +70,10 @@ description: Check for update on startup?
 default: False
 
 [Changelog]
+dfn_keepass (2.36-4)
+	* Registry-Suche in 64-Bit-Bereich entfernt, da Probleme bei Win7 englische Version (Suche in 64-Bereich mit cmd64.exe findet auch 32-Bit-Bereich! In dt. Version nicht!)
+ -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 25.08.2017
+
 dfn_keepass (2.36-3)
 	* Beschreibung zusätzlich auf Englisch
  -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 16.08.2017

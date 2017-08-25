@@ -52,7 +52,7 @@ Set $PathToExe$     = $InstallDir$ + "\KeePass.exe"
 
 setloglevel = 6
 include_append "check_msi_exitcode.opsiinc"
-include_append "section_sub_search_registry3264_uninstall_keys.opsiinc"
+include_append "section_sub_search_registry32_uninstall_keys.opsiinc"
 
 if not ($MSVersion$ = "6.1" OR $MSVersion$ = "10.0")
 	Logwarning "Only tested with windows 7 and 10! Please report to the maintainer successful installation on other windows versions."		

@@ -2,7 +2,7 @@ Killtask "KeePass.exe"
 
 Set $SearchPattern$ = $ProductName$
 ; Parameter: $SearchPattern$ Suchbegriff in Registry
-Sub_search_registry3264_uninstall_keys
+Sub_search_registry32_uninstall_keys
 ; Rückgabewert: $ResultList$ gefundene Einträge
 
 Switch count ($ResultList$)
