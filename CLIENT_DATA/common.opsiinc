@@ -27,6 +27,7 @@ DefVar $SilentOption$
 DefVar $UpdateCheck$
 DefVar $UninstallProgram$
 DefVar $UninstallDir$
+DefVar $Exe$
 DefStringlist $ResultList$
 DefStringList $FileInfoList$
 
@@ -39,7 +40,7 @@ Set $ProductVersion$ = takestring (0, splitString("%installingProdVersion%", "-"
 
 Set $DesktopLink$ = getProductProperty("desktop-link","false")
 Set $SilentOption$ = GetProductProperty("silent-option","/qb!")
-
+Set $Exe$ = "KeePass.exe"
 ; ----------------------------------------------------------------
 Set $ProductId$ 	= "keepass"
 Set $ProductName$ 	= "KeePass"
@@ -47,7 +48,7 @@ Set $MinimumSpace$ 	= "50 MB"
 Set $InstFile$		= "KeePass-" + $ProductVersion$ + ".msi"
 Set $RegPathUninstall$  = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
 Set $InstallDir$    = "%ProgramFiles32Dir%\KeePass2x"
-Set $PathToExe$     = $InstallDir$ + "\KeePass.exe"
+Set $PathToExe$     = $InstallDir$ + "\" + $Exe$
 ; ----------------------------------------------------------------
 
 setloglevel = 6

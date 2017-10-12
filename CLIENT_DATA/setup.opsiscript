@@ -11,7 +11,9 @@ else
    		comment "Start uninstall sub section"
     	Sub "%ScriptPath%\delsub.opsiscript"
     endif
-   
+  
+  Killtask $Exe$ 
+
 	Message "Installing %installingProdName% (%installingProdVersion%)..."   
 	comment "Start setup program"
 
