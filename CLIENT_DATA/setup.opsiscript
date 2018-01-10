@@ -78,7 +78,9 @@ endif
 msiexec $SilentOption$ /i "%ScriptPath%\$InstFile$" /l* "$LogDir$\$ProductId$.install_log.txt" ALLUSERS=1 REBOOT=ReallySuppress
 
 [Files_install_config]
-copy "%ScriptPath%\files\*.*" "$InstallDir$"
+copy "%ScriptPath%\files\KeePass.config.xml" "$InstallDir$"
+; ab Version 2.38 müssen Language-Files in ein Verzeichnis "Languages"
+copy "%ScriptPath%\files\*.lngx" "$InstallDir$\Languages"
 
 [XMLPatch_set-languagefile]
 openNodeSet 'Application /LanguageFile'

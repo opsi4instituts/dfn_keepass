@@ -9,7 +9,7 @@ id: dfn_keepass
 name: KeePass
 description: Einfaches und leicht zu bedienendes Programm zur sicheren Kennwortverwaltung. Alle Passwörter sind in einer verschlüsselten Datenbank gespeichert. [Open source, light-weight and easy-to-use password manager. All passwords are stored in a encrypted database.]
 advice: 
-version: 2.37
+version: 2.38
 priority: 0
 licenseRequired: False
 productClasses: 
@@ -70,6 +70,13 @@ description: Check for update on startup?
 default: False
 
 [Changelog]
+dfn_keepass (2.38-1) stable; urgency=low
+
+	* neue Upstreamversion (MSI & German.lngx erneuert)
+	* Language-Files müssen ab sofort im Verzeichnis 'Languages' liegen
+
+ -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 10.01.2018
+
 dfn_keepass (2.37-4) stable; urgency=low
 
 	* KillTask eingebaut, MSI getauscht, Update auf 2.37.
