@@ -9,7 +9,7 @@ id: dfn_keepass
 name: KeePass
 description: Einfaches und leicht zu bedienendes Programm zur sicheren Kennwortverwaltung. Alle Passwörter sind in einer verschlüsselten Datenbank gespeichert. [Open source, light-weight and easy-to-use password manager. All passwords are stored in a encrypted database.]
 advice: 
-version: 2.39
+version: 2.39.1
 priority: 0
 licenseRequired: False
 productClasses: 
@@ -70,6 +70,12 @@ description: Check for update on startup?
 default: False
 
 [Changelog]
+dfn_keepass (2.39.1-1) stable; urgency=low
+
+	* neue Upstreamversion
+
+ -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 22.05.2018
+
 dfn_keepass (2.39-1) stable; urgency=low
 
 	* neue Upstreamversion (https://keepass.info/news/n180506_2.39.html)
