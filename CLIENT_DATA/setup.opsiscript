@@ -11,14 +11,15 @@ else
    		comment "Start uninstall sub section"
     	Sub "%ScriptPath%\delsub.opsiscript"
     endif
-  
-  Killtask $Exe$ 
 
 	Message "Installing %installingProdName% (%installingProdVersion%)..."   
 	comment "Start setup program"
 
    	Winbatch_install_msi
-   	Sub_check_exitcode	
+	Set $ExitCode$ = getLastExitCode
+	if stringToBool(isMsiExitcodeFatal($ExitCode$, "True", $ErrorString$))
+		isFatalError
+	endif
 
 	comment "Testing for installation success"
 	if FileExists($PathToExe$)

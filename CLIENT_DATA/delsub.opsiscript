@@ -1,32 +1,39 @@
-Killtask "KeePass.exe"
-
-Set $SearchPattern$ = $ProductName$
-; Parameter: $SearchPattern$ Suchbegriff in Registry
-Sub_search_registry32_uninstall_keys
-; Rückgabewert: $ResultList$ gefundene Einträge
+; Ergebnis ist StringList (mehrere Einträge möglich);
+; in einer Zeile werden drei Ergebnisse mit "|" abgetrennt geliefert: Registrykey (mit Pfad) | Bereich Registry (kann direkt getRegistryValue übergeben werden | DisplayName
+; z.B. HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Test64|64bit|Test Registry Entry64
+Set $ResultList$ = SearchRegistryUninstallKeys($ProductName$)
 
 Switch count ($ResultList$)
 	Case "0"
-		comment "No installations of " + $SearchPattern$ + " found in $RegPathUninstall$. Nothing to do"
+		comment "No installations of " + $ProductName$ + " found in registry. Nothing to do"
 	EndCase
 	Case "1"
 		comment "Found installation in registry"
 		Message "Uninstalling " + $ProductName$
-		Set $RegId$ = takeString(0, $ResultList$)
+		Set $RegId$ = takeString (0,splitString(takeString(0,$ResultList$), '|'))
+		Set $RegBitScope$ = takeString (1,splitString(takeString(0,$ResultList$), '|'))
 		
 		; welcher Installer wurde verwendet? MSI oder Inno? UninstallString verrät es.
-		Set $UninstallProgram$ = GetRegistryStringValue32("[" + $RegPathUninstall$ + "\" + $RegId$ + "] UninstallString")
+		Set $UninstallProgram$ = GetRegistryValue($RegId$, "UninstallString", $RegBitScope$)
 		; Achtung 'contains' ist case-sensitive! msiexec != MsiExec
 		if (contains($UninstallProgram$, "MsiExec.exe"))
+			; bei MSI wird nur der RegKey ohne Pfad benötigt
+			Set $RegId$ = takeString (-1,splitString($RegId$,"\"))
 			Winbatch_uninstall_msi
-			Sub_check_exitcode
+			Set $ExitCode$ = getLastExitCode
+			if stringToBool(isMsiExitcodeFatal($ExitCode$, "True", $ErrorString$))
+				isFatalError
+			endif
 			Set $UninstallDir$ = $InstallDir$
 		endif
 		if (contains($UninstallProgram$, "unins000.exe"))
 			; doppelte Anführungszeichen entfernen
 			Set $UninstallProgram$ = takeString (1, splitString ( $UninstallProgram$ , '"')) 
 			Winbatch_uninstall_inno 
-			Sub_check_exitcode
+			Set $ExitCode$ = getLastExitCode
+			if stringToBool(isInnoExitcodeFatal($ExitCode$, "True", $ErrorString$))
+				isFatalError
+			endif
 			Set $UninstallDir$ = ExtractFilePath($UninstallProgram$)
 		endif
 		
